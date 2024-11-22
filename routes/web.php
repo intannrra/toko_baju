@@ -14,14 +14,14 @@ use App\Http\Controllers\{
 };
 
 // Route untuk halaman home
-Route::get('/', [HomeController::class, 'index'])->name('home');
+Route::get('/home', [HomeController::class, 'index'])->name('homes.home');
 
 // Route untuk autentikasi
 Route::get('/login', [AuthController::class, 'showLoginForm'])->name('auth.login');
 Route::post('/login', [AuthController::class, 'login'])->name('auth.login.process');
 Route::get('/register', [AuthController::class, 'showRegisterForm'])->name('auth.register');
 Route::post('/register', [AuthController::class, 'register'])->name('auth.register.process');
-Route::post('/logout', [AuthenticatedSessionController::class, 'destroy'])->name('logout');
+Route::post('/logout', [AuthController::class, 'destroy'])->name('logout');
 
 
 // Route untuk resource controllers

@@ -50,7 +50,7 @@
 <body>
     <div class="form-container">
         <h2>Register</h2>
-        <form action="{{ route('auth.register') }}" method="POST">
+        <form action="{{ route('auth.register') }}" method="POST"> <!-- Ganti dengan 'auth.register.submit' -->
             @csrf
             <div class="form-group">
                 <label for="name">Nama:</label>
@@ -68,9 +68,16 @@
                 <label for="password_confirmation">Konfirmasi Password:</label>
                 <input type="password" class="form-control" id="password_confirmation" name="password_confirmation" required>
             </div>
+            <div> 
+                <label for:"role">Role:</label>
+                <select name="role" id="role" required> 
+                    <option value="user">User</option>
+                    <option value="admin">Admin</option>
+                </select>
+            </div>
             <button type="submit" class="btn btn-primary">Daftar</button>
         </form>
-        <p>Sudah punya akun? <a href="{{ route('auth.login') }}">Login di sini</a></p>
+        <p>Sudah punya akun? <a href="{{ route('auth.login') }}">Login di sini</a></p>        
     </div>
 </body>
 </html>

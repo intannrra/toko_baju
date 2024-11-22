@@ -72,8 +72,24 @@
 </head>
 <body>
     <div class="container">
-        <h2>Login</h2>
-        <form action="{{ route('auth.login') }}" method="POST">
+           <!-- Menampilkan pesan flash jika ada -->
+           @if(session('success'))
+           <div class="alert alert-success">
+               {{ session('success') }}
+           </div>
+       @endif
+
+       @if($errors->any())
+           <div class="alert alert-danger">
+               <ul>
+                   @foreach($errors->all() as $error)
+                       <li>{{ $error }}</li>
+                   @endforeach
+               </ul>
+           </div>
+       @endif
+<!-- Form login -->
+        <form action="{{ route('auth.login') }}" method="POST"> <!-- Ganti dengan 'auth.login.submit' -->
             @csrf
             <div class="form-group">
                 <label for="email">Email:</label>
@@ -85,7 +101,8 @@
             </div>
             <button type="submit" class="btn btn-primary">Login</button>
         </form>
-        <p>Belum punya akun? <a href="{{ route('auth.register') }}">Daftar di sini</a></p>
+        
+        <p>Belum punya akun? <a href="{{ route('auth.register') }}">Daftar di sini</a></p>          
     </div>
 </body>
 </html>

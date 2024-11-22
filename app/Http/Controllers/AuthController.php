@@ -29,7 +29,7 @@ class AuthController extends Controller
         ]);
 
         if (Auth::attempt($request->only('email', 'password'))) {
-            return redirect()->route('dashboard.dashboard')->with('success', 'Login berhasil.'); // Redirect ke halaman dashboard setelah login
+            return redirect()->route('home')->with('success', 'Login berhasil.'); // Redirect ke halaman dashboard setelah login
         }
 
         return back()->withErrors([
@@ -45,6 +45,7 @@ class AuthController extends Controller
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
             'password' => 'required|string|min:8|confirmed',
+            'role' => ['required', 'string', 'in:admin,user']
         ]);
 
         // Buat pengguna baru
