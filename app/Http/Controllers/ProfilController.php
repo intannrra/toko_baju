@@ -34,21 +34,17 @@ class ProfilController extends Controller
             'profile_picture' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
         ]);
 
+        // Menyimpan data pengguna
         $user = new User();
-        $user->name = $request->input('name');
-        $user->email = $request->input('email');
-        $user->password = Hash::make($request->input('password'));
+        $user->fill($request->only(['name', 'email', 'phone_number']));
+        $user->password = Hash::make($request->password);
 
         // Menyimpan foto profil jika ada
         if ($request->hasFile('profile_picture')) {
-            $path = $request->file('profile_picture')->store('profile_pictures', 'public');
-            $user->profile_picture = $path;
+            $user->profile_picture = $request->file('profile_picture')->store('profile_pictures', 'public');
         }
 
-        // Menyimpan nomor handphone jika ada
-        $user->phone_number = $request->input('phone_number');
         $user->save();
-
         return redirect()->route('profil.index')->with('success', 'Pengguna berhasil ditambahkan!');
     }
 
@@ -57,8 +53,7 @@ class ProfilController extends Controller
     {
         $user = User::findOrFail($id);
 
-        // Cek jika pengguna yang sedang login adalah pengguna yang sedang diedit
-        if (Auth::id() !== $user->id && Auth::user()->role_id !== 1) { // role_id 1 untuk admin
+        if ($this->isUnauthorized($user)) {
             return redirect()->route('profil.index')->with('error', 'Anda tidak dapat mengedit profil pengguna lain!');
         }
 
@@ -70,12 +65,10 @@ class ProfilController extends Controller
     {
         $user = User::findOrFail($id);
 
-        // Cek jika pengguna yang sedang login adalah pengguna yang sedang diperbarui
-        if (Auth::id() !== $user->id && Auth::user()->role_id !== 1) { // role_id 1 untuk admin
+        if ($this->isUnauthorized($user)) {
             return redirect()->route('profil.index')->with('error', 'Anda tidak dapat memperbarui profil pengguna lain!');
         }
 
-        // Validasi dan proses pembaruan data...
         $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|email|max:255|unique:users,email,' . $id,
@@ -84,32 +77,25 @@ class ProfilController extends Controller
             'profile_picture' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
         ]);
 
-        // Update nama dan email
-        $user->name = $request->input('name');
-        $user->email = $request->input('email');
+        // Update data pengguna
+        $user->fill($request->only(['name', 'email', 'phone_number']));
 
-        // Jika password diubah, update password
+        // Update password jika ada
         if ($request->filled('password')) {
-            $user->password = Hash::make($request->input('password'));
+            $user->password = Hash::make($request->password);
         }
 
-        // Menyimpan foto profil baru jika ada
+        // Update foto profil jika ada file baru
         if ($request->hasFile('profile_picture')) {
-            // Hapus foto profil lama jika ada
-            if ($user->profile_picture) {
+            // Hapus foto lama jika ada
+            if ($user->profile_picture && Storage::disk('public')->exists($user->profile_picture)) {
                 Storage::disk('public')->delete($user->profile_picture);
             }
-
-            // Simpan foto profil baru
-            $path = $request->file('profile_picture')->store('profile_pictures', 'public');
-            $user->profile_picture = $path;
+            $user->profile_picture = $request->file('profile_picture')->store('profile_pictures', 'public');
         }
 
-        // Menyimpan nomor handphone baru jika ada
-        $user->phone_number = $request->input('phone_number');
         $user->save();
-
-        return redirect()->route('profil.show', ['id' => $id])->with('success', 'Profil berhasil diperbarui!');
+        return redirect()->back()->with('success', 'Profil berhasil diperbarui!');
     }
 
     // Menghapus pengguna
@@ -117,8 +103,7 @@ class ProfilController extends Controller
     {
         $user = User::findOrFail($id);
 
-        // Cek jika pengguna yang sedang login adalah pengguna yang akan dihapus
-        if (Auth::id() !== $user->id && Auth::user()->role_id !== 1) { // role_id 1 untuk admin
+        if ($this->isUnauthorized($user)) {
             return redirect()->route('profil.index')->with('error', 'Anda tidak dapat menghapus pengguna lain!');
         }
 
@@ -127,16 +112,20 @@ class ProfilController extends Controller
             Storage::disk('public')->delete($user->profile_picture);
         }
 
-        // Hapus pengguna
         $user->delete();
-
         return redirect()->route('homes.home')->with('success', 'Pengguna berhasil dihapus!');
     }
 
     // Menampilkan detail profil pengguna berdasarkan ID (Show)
     public function show($id)
     {
-        $user = User::findOrFail($id);  // Ambil data pengguna berdasarkan ID
-        return view('profil.show', compact('user'));  // Kirim data pengguna ke view 'profil.show'
+        $user = User::findOrFail($id);
+        return view('profil.show', compact('user'));
+    }
+
+    // Fungsi untuk memeriksa izin akses
+    private function isUnauthorized(User $user)
+    {
+        return Auth::id() !== $user->id && Auth::user()->role_id !== 1; // 1 = Admin
     }
 }

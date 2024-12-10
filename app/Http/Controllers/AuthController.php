@@ -49,7 +49,7 @@ class AuthController extends Controller
         $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
-            'password' => ['required', 'string', Password::min(8)->mixedCase()->numbers()->symbols()->uncompromised()],
+            'password' => ['required', 'string', Password::min(8)],
             'role' => ['required', 'string', 'in:admin,user'], // Validasi role
         ]);
 
@@ -83,4 +83,4 @@ class AuthController extends Controller
 
         return redirect()->route('auth.login')->with('success', 'Anda telah keluar.');
     }
-};
+}

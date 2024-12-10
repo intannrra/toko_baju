@@ -22,11 +22,11 @@ Route::get('/login', [AuthController::class, 'showLoginForm'])->name('auth.login
 Route::post('/login', [AuthController::class, 'login'])->name('auth.login');
 Route::get('/register', [AuthController::class, 'showRegisterForm'])->name('auth.register');
 Route::post('/register', [AuthController::class, 'register'])->name('auth.register.process');
-Route::post('/logout', [AuthController::class, 'destroy'])->name('logout');
+Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
 // Route untuk resource controllers
 Route::resource('/products', ProductController::class);
-Route::resource('/pesanans', PesananController::class);
+//Route::resource('/pesanans', PesananController::class);
 Route::resource('/trans', TransactionController::class);
 
 // Route untuk halaman checkout
@@ -47,11 +47,11 @@ Route::get('/transactions/{transaction}', [TransactionController::class, 'show']
     //Route::get('/profil/{id}/edit', [ProfilController::class, 'edit'])->name('profil.edit');
 //});
 
-Route::middleware([RoleMiddleware:: class . ':Admin'])->group(function () {
+Route::middleware([RoleMiddleware:: class . ':admin'])->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index']);
 });
 
-Route::middleware([RoleMiddleware:: class . ':User'])->group(function () {
+Route::middleware([RoleMiddleware:: class . ':user'])->group(function () {
     Route::get('/profil/{id}', [ProfilController::class, 'show'])->name('profil.show');
     Route::put('/profil/update/{id}', [ProfilController::class, 'update'])->name('profil.update');
     Route::delete('/profil/{id}', [ProfilController::class, 'destroy'])->name('profil.destroy');

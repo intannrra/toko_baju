@@ -65,15 +65,33 @@
 <body>
     <div class="form-container">
         <h2>Register</h2>
+
+        <!-- Menampilkan pesan sukses atau error -->
+        @if (session('success'))
+            <div class="alert alert-success">
+                {{ session('success') }}
+            </div>
+        @endif
+
+        @if ($errors->any())
+            <div class="alert alert-danger">
+                <ul>
+                    @foreach ($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+        @endif
+
         <form action="{{ route('auth.register.process') }}" method="POST">
             @csrf
             <div class="form-group">
                 <label for="name">Nama:</label>
-                <input type="text" class="form-control" id="name" name="name" required>
+                <input type="text" class="form-control" id="name" name="name" required value="{{ old('name') }}">
             </div>
             <div class="form-group">
                 <label for="email">Email:</label>
-                <input type="email" class="form-control" id="email" name="email" required>
+                <input type="email" class="form-control" id="email" name="email" required value="{{ old('email') }}">
             </div>
             <div class="form-group">
                 <label for="password">Password:</label>
@@ -86,8 +104,8 @@
             <div class="form-group">
                 <label for="role">Role:</label>
                 <select name="role" id="role" required>
-                    <option value="user">User</option>
-                    <option value="admin">Admin</option>
+                    <option value="user" {{ old('role') == 'user' ? 'selected' : '' }}>User</option>
+                    <option value="admin" {{ old('role') == 'admin' ? 'selected' : '' }}>Admin</option>
                 </select>
             </div>
             <button type="submit" class="btn btn-primary">Daftar</button>

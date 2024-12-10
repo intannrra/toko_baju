@@ -2,18 +2,24 @@
 
 @section('content')
 <div class="container-fluid">
-   <div id="main-banner" class="carousel slide" data-ride="carousel">
-    <div class="carousel-inner">
-        <div class="carousel-item active">
-            <img src="{{ asset('toko_bajuu.jpg') }}" class="d-block w-100" alt="New Catalog">
-            <div class="carousel-caption">
-                <h1 class="display-4 text-uppercase font-weight-bold custom-title">The New Catalog Is Here</h1>
-                <p><a class="btn btn-shop-now btn-lg mt-3" href="pesanans">Belanja Sekarang!</a></p>
+    <!-- Tombol Logout -->
+    @if(Auth::check())
+        <form action="{{ route('logout') }}" method="POST" class="mb-3">
+        </form>
+    @endif
+
+    <div id="main-banner" class="carousel slide" data-ride="carousel">
+        <div class="carousel-inner">
+            <div class="carousel-item active">
+                <img src="{{ asset('toko_bajuu.jpg') }}" class="d-block w-100" alt="New Catalog">
+                <div class="carousel-caption">
+                    <h1 class="display-4 text-uppercase font-weight-bold custom-title">The New Catalog Is Here</h1>
+                    <p><a class="btn btn-shop-now btn-lg mt-3" href="pesanans">Belanja Sekarang!</a></p>
+                </div>
             </div>
         </div>
     </div>
 </div>
-
 @endsection
 
 <style>
